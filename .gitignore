@@ -1,0 +1,20 @@
+# General
+*.[oa]
+*.pyc
+*.raw
+*~
+*.out
+*.so.*
+*.dylib
+*.dll
+*foo*
+build/
+__pycache__/
+
+# Builds
+*.o
+lib/*
+
+# Tests
+tests/*.out
+
