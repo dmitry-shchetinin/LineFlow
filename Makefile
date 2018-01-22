@@ -3,7 +3,7 @@ CFLAGS = -I./include -fPIC -O2 -g -Wall -Wno-unused-variable
 
 SOURCES_LIB = $(shell echo src/line_flow.c)
 OBJECTS_LIB = $(SOURCES_LIB:.c=.o)
-TARGET_LIB = $(PWD)/lib/Unix/libline_flow.so
+TARGET_LIB = $(PWD)/lib/libline_flow.so
 
 SOURCES_TEST = $(shell echo tests/*.c)
 OBJECTS_TEST = $(SOURCES_TEST:.c=.o)
@@ -35,7 +35,7 @@ $(TARGET_LIB) : $(OBJECTS_LIB)
 .PHONY: test
 test : $(TARGET_TEST)
 tests/%.out: tests/%.c
-	$(CC) $(CFLAGS) -I./include -L./lib/Unix -Wl,-rpath ./lib/Unix -o $@ $< -lline_flow -lm
+	$(CC) $(CFLAGS) -I./include -L./lib -Wl,-rpath ./lib -o $@ $< -lline_flow -lm
 	./tests/test_line_flow.out
 	rm ./tests/test_line_flow.out
 

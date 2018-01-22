@@ -6,7 +6,7 @@ approximations that have a desired quality or number of linear constraints. This
 
 1. Source code for the library as well as files required to build it on Windows or Unix systems.
 2. Source code for Matlab wrappers, which make the library easily callable from Matlab.
-3. Pre-built files for library and Matlab wrappers (in 'lib' directory).
+3. Pre-built files for Windows for the library and Matlab wrappers (in 'lib' directory).
 4. Example scripts of calling the library in C and Matlab. 
 5. A Matlab script that plots the boundary of the feasible set of the original constraint and its constructed approximation.
 
@@ -18,7 +18,7 @@ the instruction on how to build the library on different OS.
 ### Windows (with Visual Studio)
 You can use pre-built files from this repository, which were compiled on a 64 bit machine. Alternatively, you can do the following: 
 
-1. Create a dynamic link library (see example [Walkthrough]( https://msdn.microsoft.com/en-us/library/ms235636.aspx)).
+1. Create a dynamic link library project (see example [Walkthrough]( https://msdn.microsoft.com/en-us/library/ms235636.aspx)).
 2. Add header file (`line_flow.h`), source file (`line_flow.c`) and definition file (`line_flow.def`) to the project.
 3. Build the project.
 
@@ -35,21 +35,22 @@ The library can be called from Matlab using the following interface functions:
 
 These are so-called mex functions, which are written in C for efficiency but can be called from Matlab as regular Matlab functions. 
 Compiled mex functions for Windows and MacOS are available from this repository. Alternatively, you can compile them yourself. This 
-requires pre-built library files (.o in Unix and .lib in Windows), which you can get from this repository or by building the library 
+requires pre-built files (.o in Unix and .lib in Windows), which you can get from this repository or by building the library 
 yourself using the steps described above. Note that compiling a mex function requires that Matlab have a C compiler. The list of 
 supported compilers is available [here]( https://ch.mathworks.com/support/compilers.html). To compile function `LF_linearize_XXX`, 
 where `XXX` stands for `line` or `system`, follow these steps:
 
 1. Put the following files in a folder on your Matlab path:
     - `line_flow.h`
-    - `line_flow.lib` (for Windows) or `line_flow.o` (for Linux/MacOS)
+    - `line_flow.lib` (for Windows), `line_flow.o` (for Linux), or `line_flow.a` (for MacOS)
     - `LF_linearize_XXX.c`
 
 2. Make this folder your current folder in Matlab.
 3. Type the following command in Matlab command line:
     - for Windows:      `mex LF_linearize_XXX.c line_flow.lib`
     - for Linux/MacOS:  `mex LF_linearize_XXX.c line_flow.o`
-4. That's it! Now you can call the compiled function as a regular Matlab function.
+
+That's it! Now you can call the compiled function as a regular Matlab function.
 
 - - - -
 
@@ -80,7 +81,7 @@ A branch is modeled by the pi-model. The following values are required by the al
 - upper bound on voltage magnitude at the end of the line.
 
 #### Flow side (required)
-Tells the algorithm, the constraint at which side of the branch should be approximated:
+Tells the algorithm the side of the branch at which the constraint should be approximated:
 
 - If 1, the line flow constraint at the beginning of the line will be approximated,
 - If 2, the line flow constraint at the end of the line will be approximated,
@@ -90,7 +91,7 @@ the same as in options 1 or 2.
 
 #### Algorithm's options (optional)
 Tells the algorithm what the desired parameters of the approximation are and provides control parameters of some low-level functions. 
-The following options are available (default values are in the brackets):
+The following options are available (default values are in the parenthesis):
 
 - Approximation type: inner or outer (inner),
 - Maximum approximation error in the current magnitude in percent (5.0),
@@ -121,10 +122,10 @@ It is recommended to keep the last three options at their default values.
 ### Outputs
 
 #### Matrix of constraints normals
-This corresponds to A in Ax<b.
+This corresponds to A in Ax<=b.
 
 #### Vector of constraints 'offsets'
-This corresponds to b in Ax<b.
+This corresponds to b in Ax<=b.
 
 #### Number of constructed constraints
 
@@ -133,12 +134,12 @@ This corresponds to b in Ax<b.
 #### Output flag
 Shows the result of the approximation algorithm:
 
-- 0 - The nonlinear constraint cannot become binding,
-- 1 - The nonlinear constraint is infeasible,
-- 2 - The approximation was successfully constructed,
-- 3 - There was an error in the input branch parameters,
-- 4 - There was an error in the input algorithm's options,
-- 5 - There is no thermal limit for the given branch,
+- 0 - The nonlinear constraint cannot become binding
+- 1 - The nonlinear constraint is infeasible
+- 2 - The approximation was successfully constructed
+- 3 - There was an error in the input branch parameters
+- 4 - There was an error in the input algorithm's options
+- 5 - There is no thermal limit for the given branch
 - 6 - Other (currently not used).
 
 The approximation is only constructed if output flag = 2.
@@ -155,7 +156,7 @@ This repository contains a number of examples of how to use the library in Matla
       that can be easily fed into a solver. It contains a description of inputs and outputs of mex function `LF_linearize_system`.
     - `construct_and_plot.m` plots the boundary surface of the actual nonlinear line flow constraint and its approximation. The actual plotting 
       is done using the provided Matlab function `plot_constraints.m`.
-    - `use_in_OPF` shows how to use the constructed approximation for a given system in the AC OPF using 
+    - `use_in_OPF.m` shows how to use the constructed approximation for a given system in the AC OPF using 
       [MATPOWER](http://www.pserc.cornell.edu/matpower/). Note that the best results were observed when the AC OPF with linearized line flow
       constraints was solved with IPOPT.
 2. C/C++:
@@ -165,7 +166,7 @@ This repository contains a number of examples of how to use the library in Matla
 - - - -
 
 ## External packages using LINEFLOW
-LINEFLOW has been integrated into a modeling library [PFNET](https://github.com/ttinoco/PFNET).
+LINEFLOW has been integrated into a modeling library [PFNET](https://github.com/ttinoco/PFNET). In Matlab, the linearized constraints can be easily used by [MATPOWER](http://www.pserc.cornell.edu/matpower/) as shown in example file `use_in_OPF.m`.
 
 - - - -
 
