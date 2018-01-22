@@ -6,7 +6,7 @@ approximations that have a desired quality or number of linear constraints. This
 
 1. Source code for the library as well as files required to build it on Windows or Unix systems.
 2. Source code for Matlab wrappers, which make the library easily callable from Matlab.
-3. Pre-built files for Windows for the library and Matlab wrappers (in 'lib' directory).
+3. Pre-built files for Windows for the library and Matlab wrappers (in 'release').
 4. Example scripts of calling the library in C and Matlab. 
 5. A Matlab script that plots the boundary of the feasible set of the original constraint and its constructed approximation.
 
@@ -15,6 +15,7 @@ approximations that have a desired quality or number of linear constraints. This
 ## Building library in C/C++
 LINEFLOW can be built on Windows, Linux or Mac. There are no external dependencies; the only requirement is a C compiler. Below is 
 the instruction on how to build the library on different OS.
+
 ### Windows (with Visual Studio)
 You can use pre-built files from this repository, which were compiled on a 64 bit machine. Alternatively, you can do the following: 
 
@@ -34,21 +35,18 @@ The library can be called from Matlab using the following interface functions:
 * `LF_linearize_system`, which constructs the approximation of all line flow constraints in the system.
 
 These are so-called mex functions, which are written in C for efficiency but can be called from Matlab as regular Matlab functions. 
-Compiled mex functions for Windows and MacOS are available from this repository. Alternatively, you can compile them yourself. This 
-requires pre-built files (.o in Unix and .lib in Windows), which you can get from this repository or by building the library 
-yourself using the steps described above. Note that compiling a mex function requires that Matlab have a C compiler. The list of 
+Compiled mex functions for Windows are available from this repository. Alternatively, you can compile them yourself, which requires that Matlab have a C compiler. The list of 
 supported compilers is available [here]( https://ch.mathworks.com/support/compilers.html). To compile function `LF_linearize_XXX`, 
 where `XXX` stands for `line` or `system`, follow these steps:
 
 1. Put the following files in a folder on your Matlab path:
     - `line_flow.h`
-    - `line_flow.lib` (for Windows), `line_flow.o` (for Linux), or `line_flow.a` (for MacOS)
+    - `line_flow.c`
     - `LF_linearize_XXX.c`
 
 2. Make this folder your current folder in Matlab.
 3. Type the following command in Matlab command line:
-    - for Windows:      `mex LF_linearize_XXX.c line_flow.lib`
-    - for Linux/MacOS:  `mex LF_linearize_XXX.c line_flow.o`
+    - `mex LF_linearize_XXX.c line_flow.c`
 
 That's it! Now you can call the compiled function as a regular Matlab function.
 
