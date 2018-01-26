@@ -10,6 +10,7 @@
 *foo*
 build/
 __pycache__/
+*.gitattributes
 
 # Builds
 *.o
