@@ -134,11 +134,11 @@ LF_Results* LF_construct(LF_Branch* branch, int flow_side, LF_Options* options_i
 	LF_Options* options;
 	LF_Results* results;
 	LF_Workspace* workspace;
-	BOOL use_default_options = FALSE;
+	BOOL use_default_options = LF_FALSE;
 
 	if (!options_in) {
 		options = LF_get_default_options();
-		use_default_options = TRUE;
+		use_default_options = LF_TRUE;
 	}
 	else
 		options = options_in;
@@ -229,86 +229,86 @@ BOOL LF_check_options(LF_Options* options, LF_Results* results, int flow_side) {
 	if (options->computation_mode < 1 || options->computation_mode>2) {
 		strcpy(results->message, "Input error: computation mode can be either 1 or 2.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check number of iterations
 	if (options->iter_Max < 25) {
 		strcpy(results->message, "Input error: must have iter_Max>=25.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check number of adjustments
 	if (options->N_adjustments < 0) {
 		strcpy(results->message, "Input error: must have N_adjustments>=0.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check transformer model type
 	if (options->tr_model_type < 0 || options->tr_model_type>1) {
 		strcpy(results->message, "Input error: transformer model type can be 0 or 1.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check maximum angle 
 	if (options->delta_max_user<LF_PI / 4.0 || options->delta_max_user>88.0 * LF_PI / 180.0) {
 		strcpy(results->message, "Input error: must have 45<=delta_max_user<=88 degrees.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check tolerance
 	if (options->eps_tolerance <= 0.0) {
 		strcpy(results->message, "Input error: eps_tolerance must have a positive value.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check max error change
 	if (options->max_error_change <= 0.0) {
 		strcpy(results->message, "Input error: max_error_change must have a positive value.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check ratio threshold
 	if (options->ratio_threshold <= 0.0 || options->ratio_threshold >= 1.0) {
 		strcpy(results->message, "Input error: must have 0<ratio_threshold<1.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that max number of constraints is positive
 	if (options->N_constraints_max <= 0) {
 		strcpy(results->message, "Input error: must have N_constraints_max>=1.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that maximum error is positive
 	if (options->error_max <= 0.0) {
 		strcpy(results->message, "Input error: maximum error must have a positive value.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that flow side is 1, 2 or 3
 	if (flow_side < 1 || flow_side>3) {
 		strcpy(results->message, "Input error: flow_side can be 1, 2, or 3.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that approximation is either conservative or relaxed
 	if (options->approximation != conservative && options->approximation != relaxed) {
 		strcpy(results->message, "Input error: approximation must be either conservative or relaxed.");
 		results->flag_result = error_options;
-		return FALSE;
+		return LF_FALSE;
 	}
-	return TRUE;
+	return LF_TRUE;
 }
 
 
@@ -318,42 +318,42 @@ BOOL LF_check_branch_data(LF_Branch* branch, LF_Results* results) {
 	if (branch->V_i_min <= 0.0 || branch->V_j_min <= 0.0) {
 		strcpy(results->message, "Input error: lower bounds on voltage magnitudes must be positive.");
 		results->flag_result = error_branch_data;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check consistency of bounds on voltage magnitudes
 	if (branch->V_i_min > branch->V_i_max || branch->V_j_min > branch->V_j_max) {
 		strcpy(results->message, "Input error: must have V_min<=V_max.");
 		results->flag_result = error_branch_data;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that branch has non-zero series parameters
 	if ((branch->g == 0.0 && branch->b == 0.0) || fabs(branch->g) > 1e6 || fabs(branch->b) > 1e6) {
 		strcpy(results->message, "Input error: g and b cannot be >1e6 or simultaneously zero.");
 		results->flag_result = error_branch_data;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that transformer's ratio is nonnegative
 	if (branch->t_ratio < 0.0) {
 		strcpy(results->message, "Input error: transformer's ratio must be nonnegative.");
 		results->flag_result = error_branch_data;
-		return FALSE;
+		return LF_FALSE;
 	}
 
 	//check that thermal limit is positive
 	if (branch->I_max < 0.0) {
 		strcpy(results->message, "Input error: value of maximum current must be positive.");
 		results->flag_result = error_branch_data;
-		return FALSE;
+		return LF_FALSE;
 	}
 	else if (branch->I_max == 0.0) {
 		strcpy(results->message, "Thermal limit is zero => no approximation was constructed.");
 		results->flag_result = zero_limit;
-		return FALSE;
+		return LF_FALSE;
 	}
-	return TRUE;
+	return LF_TRUE;
 }
 
 
@@ -544,9 +544,9 @@ BOOL is_feasible_region_empty(LF_Workspace* workspace) {
 		sqrt(workspace->branch_data[4] / workspace->branch_data[1]) ||
 		workspace->V_limits.V_j_min>workspace->branch_data[8] * workspace->V_limits.V_i_max + 
 		sqrt(workspace->branch_data[4] / workspace->branch_data[1]))
-		return TRUE;
+		return LF_TRUE;
 	else
-		return FALSE;
+		return LF_FALSE;
 }
 
 
@@ -561,13 +561,13 @@ void compute_parameters_of_feasible_region(LF_Workspace* workspace, LF_Options* 
 
 	//check reachability of points in ViVj box
 	if (max_element_in_array(workspace->feas_reg.I_at_Vbox_corners, 4) <= workspace->I_max_user) {
-		workspace->feas_reg.approximation_needed = FALSE; //all corners are not reachable
+		workspace->feas_reg.approximation_needed = LF_FALSE; //all corners are not reachable
 		return;
 	}
 	else if (min_element_in_array(workspace->feas_reg.I_at_Vbox_corners, 4) >= workspace->I_max_user)
-		workspace->all_points_reachable = TRUE; //all corners are reachable
+		workspace->all_points_reachable = LF_TRUE; //all corners are reachable
 	else {
-		workspace->all_points_reachable = FALSE; //there are reachable and unreachable corners
+		workspace->all_points_reachable = LF_FALSE; //there are reachable and unreachable corners
 	    //tighten limits on V to make sure that at least three corners of ViVj box are reachable
 		tighten_V_limits_for_reachability(workspace);
 	}
@@ -594,10 +594,10 @@ void compute_parameters_of_feasible_region(LF_Workspace* workspace, LF_Options* 
 
 /*initialize parameters of feasible region to their default values*/
 void set_default_flags_for_feasible_region(FeasibleRegion* feas_reg) {
-	feas_reg->top_left_corner_feasible = TRUE;
-	feas_reg->bottom_right_corner_feasible = TRUE;
-	feas_reg->convex = TRUE;
-	feas_reg->approximation_needed = TRUE;
+	feas_reg->top_left_corner_feasible = LF_TRUE;
+	feas_reg->bottom_right_corner_feasible = LF_TRUE;
+	feas_reg->convex = LF_TRUE;
+	feas_reg->approximation_needed = LF_TRUE;
 }
 
 
@@ -688,10 +688,10 @@ void establish_feasibility_of_Vbox_corners(LF_Workspace* workspace) {
 	double offset = sqrt(workspace->branch_data[4] / workspace->branch_data[1]); //abs value of the offset of boundary lines
 	//top_left_corner
 	if (workspace->V_limits.V_j_max - workspace->branch_data[8] * workspace->V_limits.V_i_min > offset)
-		workspace->feas_reg.top_left_corner_feasible = FALSE;
+		workspace->feas_reg.top_left_corner_feasible = LF_FALSE;
 	//bottom-right corner
 	if (fabs(workspace->V_limits.V_j_min - workspace->branch_data[8] * workspace->V_limits.V_i_max) > offset)
-		workspace->feas_reg.bottom_right_corner_feasible = FALSE;
+		workspace->feas_reg.bottom_right_corner_feasible = LF_FALSE;
 }
 
 
@@ -751,21 +751,21 @@ void tighten_V_limits_for_feasibility(LF_Workspace* workspace) {
 
 /*check if the feasible region is convex for line between gen and load and if it is non-convex, retain only the part that causes nonconvexity*/
 void establish_convexity_of_feasible_region(LF_Workspace* workspace, LF_Options* options) {
-	LineSegmentEdge segment = { .convex = FALSE };
+	LineSegmentEdge segment = { .convex = LF_FALSE };
 	double V_inflection, sign=workspace->branch_data[9];
 
-	if (workspace->feas_reg.bottom_right_corner_feasible == FALSE ||
-		workspace->feas_reg.top_left_corner_feasible == FALSE) {
-		workspace->feas_reg.convex = TRUE;  //nonconvexity can only happen if both box corners are feasible
+	if (workspace->feas_reg.bottom_right_corner_feasible == LF_FALSE ||
+		workspace->feas_reg.top_left_corner_feasible == LF_FALSE) {
+		workspace->feas_reg.convex = LF_TRUE;  //nonconvexity can only happen if both box corners are feasible
 		return;
 	}
 
 	compute_parameters_of_edge_line_segment(workspace->branch_data, &workspace->V_limits, &segment);
 
 	if (sign*segment.line_slope > sign*segment.d_delta_V_min || sign*segment.line_slope < sign*segment.d_delta_V_max)
-		workspace->feas_reg.convex = FALSE;
+		workspace->feas_reg.convex = LF_FALSE;
 	else {
-		workspace->feas_reg.convex = TRUE;
+		workspace->feas_reg.convex = LF_TRUE;
 		return;
 	}
 
@@ -825,7 +825,7 @@ void compute_parameters_of_edge_line_segment(double *branch_data, VoltageLimits*
 /*Construct linear approximation in a nested loop. The outer loop increases the number of constraints and
 the inner loop refines the offsets of intersection lines to reduce the approxation error*/
 void compute_parameters_of_approximation(LF_Workspace* workspace, LF_Options* options) {
-	BOOL finish_outer_loop = FALSE, finish_inner_loop;
+	BOOL finish_outer_loop = LF_FALSE, finish_inner_loop;
 	int N_constructed_constraints, N_previously_constructed_constraints = workspace->constraint_counter, 
 		iter_inner, N_constraints_max, N_new_constraints = 0, N_constraints_min;
 	double max_error = 0.0, min_error = 0.0, max_error_previous = 1e10, width_relative;
@@ -853,7 +853,7 @@ void compute_parameters_of_approximation(LF_Workspace* workspace, LF_Options* op
 		N_constructed_constraints += N_new_constraints;
 
 		//inner loop refines offsets of intersection lines for a given number of linear constraints to make the error smaller
-		finish_inner_loop = FALSE;
+		finish_inner_loop = LF_FALSE;
 		iter_inner = 0;
 		while (!finish_inner_loop) {
 			//reset constraints counter
@@ -879,7 +879,7 @@ void compute_parameters_of_approximation(LF_Workspace* workspace, LF_Options* op
 			//check the stopping criteria of inner loop
 			if (max_error < options->error_max || min_error / max_error >= options->ratio_threshold ||
 				iter_inner == options->N_adjustments)
-				finish_inner_loop = TRUE;
+				finish_inner_loop = LF_TRUE;
 			else {
 				refine_offsets_of_existing_interseciton_lines(workspace, N_constructed_constraints, options->approximation);
 				iter_inner++;
@@ -893,7 +893,7 @@ void compute_parameters_of_approximation(LF_Workspace* workspace, LF_Options* op
 		if (max_error < options->error_max || N_constructed_constraints == N_constraints_max ||
 			(max_error_previous > max_error && max_error_previous - max_error < N_new_constraints*options->max_error_change) ||
 			width_relative<0.45)
-			finish_outer_loop = TRUE;
+			finish_outer_loop = LF_TRUE;
 		else if (max_error_previous < max_error && N_constructed_constraints>2) {
 			N_constraints_max = N_constructed_constraints - N_new_constraints; //to make sure we exit after the next iteration
 			N_new_constraints = -N_new_constraints;
@@ -1124,7 +1124,7 @@ void construct_linear_constraints(LF_Workspace* workspace, LF_Options* options, 
 
 /*construct conservative linear approximation for line between gen and load*/
 void construct_approximation_to_nonconvex_region(LF_Workspace* workspace, LF_Options* options) {
-	LineSegmentEdge segment = { .convex = FALSE };
+	LineSegmentEdge segment = { .convex = LF_FALSE };
 	double V_temp, delta_curve, sign = workspace->branch_data[9];
 	int index_variable_V;
 
@@ -1161,7 +1161,7 @@ void construct_approximation_to_nonconvex_region(LF_Workspace* workspace, LF_Opt
 
 /*estimate approximation error for line between load and generator in case of non-convex feasible region*/
 void estimate_approximation_error_for_nonconvex_region(LF_Workspace* workspace, LF_Options* options) {
-	LineSegmentEdge segment = { .convex = FALSE };
+	LineSegmentEdge segment = { .convex = LF_FALSE };
 	double error_begin, error_end, V_temp;
 
 	//fo conservative approximation we will only look at end points
@@ -1462,9 +1462,8 @@ void compute_plane_offsets(LF_Workspace* workspace, int N_constraints, LF_Option
 /*compute the required shift in delta to ensure that a given plane represents a relaxed approximation to the surface*/
 double delta_shift_plane_relaxed(LF_Workspace* workspace, int index, int N_constraints, LF_Options* options) {
 	PlaneType plane_type;
-	IntersectionLine *lines = workspace->lines;
 	int line_indexes[2] = { index, 0 };
-	double delta_shift_begin = 0, delta_shift_end = 0, delta_shift_max, abs_slope = fabs(workspace->slope_all_lines);
+	double delta_shift_begin = 0, delta_shift_end = 0, delta_shift_max;
 
 	//record indices of the intersection lines relevant for this plane
 	if (N_constraints == 1)
@@ -1481,10 +1480,10 @@ double delta_shift_plane_relaxed(LF_Workspace* workspace, int index, int N_const
 		plane_type = ordinary;
 
 	//compute required shift in delta for the beginning of the plane
-	delta_shift_begin = delta_shift_one_side_of_plane(workspace, line_indexes, options, TRUE, plane_type);
+	delta_shift_begin = delta_shift_one_side_of_plane(workspace, line_indexes, options, LF_TRUE, plane_type);
 
 	//compute required shift in delta for the end of the plane
-	delta_shift_end = delta_shift_one_side_of_plane(workspace, line_indexes, options, FALSE, plane_type);
+	delta_shift_end = delta_shift_one_side_of_plane(workspace, line_indexes, options, LF_FALSE, plane_type);
 
 	//compute the largest required shift in delta
 	if (workspace->branch_data[9] == 1.0)
@@ -1499,7 +1498,7 @@ double delta_shift_plane_relaxed(LF_Workspace* workspace, int index, int N_const
 /*compute the shift in delta based on the edge located at either beginning or end of the box*/
 double delta_shift_one_side_of_plane(LF_Workspace* workspace, int* line_indexes, LF_Options* options,
 	BOOL bottom_left_corner, PlaneType plane_type) {
-	LineSegmentEdge segment = { .convex = TRUE };
+	LineSegmentEdge segment = { .convex = LF_TRUE };
 	IntersectionLine* lines = workspace->lines;
 	Point3D point1, point2, point_corner;
 	double offset_corner, delta_surface_corner, *branch_data = workspace->branch_data, delta_shift_temp[3];
@@ -1892,9 +1891,9 @@ void estimate_relaxed_approximation_errors(LF_Workspace* workspace, int N_constr
 	if (N_constraints == 1 &&
 		((workspace->feas_reg.bottom_right_corner_feasible && workspace->feas_reg.top_left_corner_feasible) ||
 			(!workspace->feas_reg.bottom_right_corner_feasible && !workspace->feas_reg.top_left_corner_feasible)))
-		compute_error_at_corners = TRUE;
+		compute_error_at_corners = LF_TRUE;
 	else 
-		compute_error_at_corners = FALSE;
+		compute_error_at_corners = LF_FALSE;
 	
 	for (int i = 0; i <= N_constraints; i++) {
 		if ((i == 0 && workspace->feas_reg.bottom_right_corner_feasible) || compute_error_at_corners)
@@ -1975,9 +1974,9 @@ double min_error_relaxed_approximation(double *errors, int N_constraints) {
 /*check if approximation for lower part can be obtained by reflecting approximation for upper part*/
 BOOL is_approximation_symmetric(LF_Workspace* workspace) {
 	if (fabs(workspace->branch_data[2] / workspace->branch_data[3]) < 0.001)
-		return TRUE;
+		return LF_TRUE;
 	else
-		return FALSE;
+		return LF_FALSE;
 }
 
 
@@ -2115,9 +2114,9 @@ void compute_surface_intersection_lines(LF_Workspace *workspace, IntersectionLin
 	coefficients[3] = 4 * branch_data[2] * branch_data[2] * branch_data[4] * branch_data[4];
 
 	//deal with points close to (V_i_min, V_j_min) corner
-	compute_surface_intersection_points(workspace, line_lower, line_upper, coefficients, TRUE);
+	compute_surface_intersection_points(workspace, line_lower, line_upper, coefficients, LF_TRUE);
 	//deal with points close to (V_i_max, V_j_max) corner
-	compute_surface_intersection_points(workspace, line_lower, line_upper, coefficients, FALSE);
+	compute_surface_intersection_points(workspace, line_lower, line_upper, coefficients, LF_FALSE);
 }
 
 
@@ -2222,7 +2221,7 @@ void compute_V_at_surfaces_intersection(double *coefficients, double V_fixed, do
 
 /*compute values of delta at the given point of the intersection of two surfaces*/
 void compute_deltas_at_surfaces_intersection(double *branch_data, Point3D *point) {
-	double a1 = branch_data[0], a2 = branch_data[1], deltas_point[4];
+	double deltas_point[4];
 	//elements of deltas_point are: delta_upper limit at line begin, delta_upper limit at line end, delta_lower at line begin, delta_lower at line end
 
 	//deltas for the surface corresponding to the limit at the beginning of the line
@@ -2343,9 +2342,9 @@ void record_parameters_of_one_constraint(LF_Workspace *workspace, LF_Results *re
 BOOL constraint_should_be_recorded(IntersectionLine *plane_line, IntersectionLine *surface_line, double sign) {
 	if (sign*plane_line->point_begin.V_j / plane_line->point_begin.V_i < sign*surface_line->point_begin.V_j / surface_line->point_begin.V_i ||
 		sign*plane_line->point_end.V_j / plane_line->point_end.V_i < sign*surface_line->point_end.V_j / surface_line->point_end.V_i)
-		return TRUE;
+		return LF_TRUE;
 	else
-		return FALSE;
+		return LF_FALSE;
 }
 
 
@@ -2354,12 +2353,12 @@ BOOL constraint_should_be_recorded(IntersectionLine *plane_line, IntersectionLin
 /*bisection algorithm (general realization)*/
 double compute_value_by_bisection(double x_min, double x_max, double eps_tolerance, double *branch_data,
 	BOOL(*retain_first_half)(double, double*, void*), void* data) {
-	BOOL split_interval = TRUE;
+	BOOL split_interval = LF_TRUE;
 	double x;
 
 	while (split_interval) {
 		if (x_max - x_min < eps_tolerance)
-			split_interval = FALSE;
+			split_interval = LF_FALSE;
 		else {
 			x = (x_min + x_max) / 2;
 			if (retain_first_half(x, branch_data, data))
@@ -2389,15 +2388,15 @@ BOOL bisection_check_for_inflection_point(double V, double *branch_data, void* d
 
 	if (sign*delta_line>sign*delta_curve) { //if at this point initial approximation is not conservative
 		if (sign*line_slope>sign*region->d_delta_V_min)
-			retain_first_half = FALSE;
+			retain_first_half = LF_FALSE;
 		else
-			retain_first_half = TRUE;
+			retain_first_half = LF_TRUE;
 	}
 	else { //if at this point initial approximation is conservative
 		if (sign*line_slope>sign*region->d_delta_V_min)
-			retain_first_half = TRUE;
+			retain_first_half = LF_TRUE;
 		else
-			retain_first_half = FALSE;
+			retain_first_half = LF_FALSE;
 	}
 	return retain_first_half;
 }
@@ -2413,9 +2412,9 @@ BOOL bisection_check_for_intersection_line(double V_i, double *branch_data, void
 	d_delta = slope_of_tangent_line(V_i, V_j, branch_data, intersection_line);
 
 	if (sign*d_delta < sign*line_slope)
-		retain_first_half = FALSE;
+		retain_first_half = LF_FALSE;
 	else
-		retain_first_half = TRUE;
+		retain_first_half = LF_TRUE;
 
 	return retain_first_half;
 }
@@ -2440,15 +2439,15 @@ BOOL bisection_check_for_line_with_fixed_V(double V, double *branch_data, void* 
 
 	if (!region->convex) {
 		if (sign*d_delta < sign*region->line_slope)
-			retain_first_half = FALSE;
+			retain_first_half = LF_FALSE;
 		else
-			retain_first_half = TRUE;
+			retain_first_half = LF_TRUE;
 	}
 	else {
 		if (sign*d_delta > sign*region->line_slope)
-			retain_first_half = FALSE;
+			retain_first_half = LF_FALSE;
 		else
-			retain_first_half = TRUE;
+			retain_first_half = LF_TRUE;
 	}
 
 	return retain_first_half;
@@ -2465,14 +2464,14 @@ BOOL bisection_intersection_of_plane_and_surface(double V_i, double *branch_data
 
 	if (data[4] > 0)
 		if (delta_surface*branch_data[9] > delta_plane*branch_data[9])
-			return TRUE;
+			return LF_TRUE;
 		else
-			return FALSE;
+			return LF_FALSE;
 	else
 		if (delta_surface*branch_data[9] > delta_plane*branch_data[9])
-			return FALSE;
+			return LF_FALSE;
 		else
-			return TRUE;
+			return LF_TRUE;
 }
 
 
@@ -2482,7 +2481,7 @@ double solve_equation_by_Newton_Raphson(double x, LF_Options *options, double *b
 	int iter = 0;
 	double delta_x;
 
-	while (TRUE) {
+	while (LF_TRUE) {
 		delta_x = update_in_Newton_Raphson(x, branch_data, data);
 		x = x + delta_x;
 		iter++;

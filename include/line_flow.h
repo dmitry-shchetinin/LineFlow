@@ -81,7 +81,7 @@ typedef enum ApproximationType { conservative, relaxed } ApproximationType;
 typedef enum PlaneType {first, ordinary, corner, last} PlaneType;
 
 typedef char BOOL;
-enum { FALSE = 0, TRUE = 1 };
+enum { LF_FALSE = 0, LF_TRUE = 1 };
 
 
 /*Outer interface function. Check input branch branch_data, initialize workspace and output structures,
@@ -89,7 +89,7 @@ and construct linear approximation*/
 LF_Results* LF_construct(LF_Branch* branch, int flow_side, LF_Options* options);
 
 /*create default algorithm options*/
-LF_Options* LF_get_default_options();
+LF_Options* LF_get_default_options(void);
 
 /*initialize output structure*/
 LF_Results* LF_initialize_results(LF_Options* options, int flow_side);
@@ -427,20 +427,6 @@ void LF_set_approximation_type(int approximation, LF_Options* options);
 
 void LF_set_branch_parameters(double V_i_min, double V_i_max, double V_j_min, double V_j_max,
 	double g, double b, double b_sh, double t_ratio, double t_shift, double I_max, LF_Branch* branch);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
 
