@@ -1912,9 +1912,9 @@ void estimate_relaxed_approximation_errors(LF_Workspace* workspace, int N_constr
 		compute_error_at_corners = LF_FALSE;
 	
 	for (i = 0; i <= N_constraints; i++) {
-		if ((i == 0 && workspace->feas_reg.bottom_right_corner_feasible) || compute_error_at_corners)
+		if (i == 0 && (workspace->feas_reg.bottom_right_corner_feasible || compute_error_at_corners))
 			errors[i] = error_value_in_ViVj_point(workspace, workspace->V_limits.V_i_max, workspace->V_limits.V_j_min, 0);
-		else if ((i == N_constraints && workspace->feas_reg.top_left_corner_feasible) || compute_error_at_corners)
+		else if (i == N_constraints && (workspace->feas_reg.top_left_corner_feasible || compute_error_at_corners))
 			errors[i] = error_value_in_ViVj_point(workspace, workspace->V_limits.V_i_min, workspace->V_limits.V_j_max, i - 1);
 		else {
 			if (i > 0 && i < N_constraints) {
