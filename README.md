@@ -1,7 +1,7 @@
-# LINEFLOW: Library for constructing linear approximations of line flow constraints
+# LineFlow: Library for constructing linear approximations of line flow constraints
 
 ## Overview 
-LINEFLOW is a library for constructing linear approximations of line flow constraints. The user can choose between inner and outer 
+LineFlow is a library for constructing linear approximations of line flow constraints. The user can choose between inner and outer 
 approximations that have a desired quality or number of linear constraints. This repository includes the following files:
 
 1. Source code for the library as well as files required to build it on Windows or Unix systems.
@@ -13,7 +13,7 @@ approximations that have a desired quality or number of linear constraints. This
 - - - -
 
 ## Building library in C/C++
-LINEFLOW can be built on Windows, Linux or Mac. There are no external dependencies; the only requirement is a C compiler. Below is 
+LineFlow can be built on Windows, Linux or Mac. There are no external dependencies; the only requirement is a C compiler. Below is 
 the instruction on how to build the library on different OS.
 
 ### Windows (with Visual Studio)
@@ -163,8 +163,8 @@ This repository contains a number of examples of how to use the library in Matla
 
 - - - -
 
-## External packages using LINEFLOW
-LINEFLOW has been integrated into a modeling library [PFNET](https://github.com/ttinoco/PFNET). In Matlab, the linearized constraints can be easily used by [MATPOWER](http://www.pserc.cornell.edu/matpower/) as shown in example file `use_in_OPF.m`.
+## External packages using LineFlow
+LineFlow has been integrated into a modeling library [PFNET](https://github.com/ttinoco/PFNET). In Matlab, the linearized constraints can be easily used by [MATPOWER](http://www.pserc.cornell.edu/matpower/) as shown in example file `use_in_OPF.m`.
 
 - - - -
 
