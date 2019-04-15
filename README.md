@@ -57,7 +57,7 @@ The algorithm for constructing the approximation is based on the properties of t
 iteratively increases the number of constructed linear constraints until either the desired approximation accuracy has been achieved or the 
 maximum allowed number of linear constraints have been constructed. At each iteration, an attempt is made to equalize the approximation 
 errors associated with individual linear constraints in order to increase the approximation accuracy. More information about the algorithm 
-is available here. The approximation of a single line flow constraint is constructed 
+is available [here]( https://ieeexplore.ieee.org/document/8481369) (please cite this article if you wish to refer to the algorithm). The approximation of a single line flow constraint is constructed 
 using Matlab mex function `LF_linearize_line` or C function `LF_construct`. The description of algorithm's inputs and outputs is given below.
 
 ### Inputs
